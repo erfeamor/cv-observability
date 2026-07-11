@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate compose file
+        run: docker compose config --quiet
+
+      - name: Check Prometheus config
+        run: |
+          docker run --rm -v "$PWD/prometheus:/config:ro" \
+            --entrypoint promtool \
+            prom/prometheus:v2.53.0 check config /config/prometheus.yml
