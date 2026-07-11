@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: cv-project
+    orgId: 1
+    folder: cv-project
+    type: file
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards

@@ -1,0 +1,10 @@
+{
+  "name": "cv-observability",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "docker compose up -d",
+  "forwardPorts": [9090, 3001],
+  "remoteUser": "vscode"
+}
