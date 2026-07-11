@@ -6,6 +6,10 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9090:9090"
+    # host.docker.internal only resolves out of the box on Docker
+    # Desktop (macOS/Windows); this mapping makes it work on Linux too.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   grafana:
     image: grafana/grafana:11.1.0
