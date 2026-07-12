@@ -1,0 +1,25 @@
+# CLAUDE.md — cv-observability
+
+Metrics stack for cv-project: Prometheus + Grafana via docker compose. **Deliberate architecture decision: metrics and logs are two separate pipelines** — this repo owns metrics; structured JSON logs go to MongoDB Atlas or CloudWatch (see `docs/logging.md`, not yet implemented). Don't unify them; the split is a stated design goal. Cross-repo context: meta repo CLAUDE.md one directory up.
+
+## Commands
+
+```bash
+docker compose up -d       # Prometheus :9090, Grafana :3001 (admin/admin)
+docker compose config -q   # validate compose changes
+docker run --rm -v "$PWD/prometheus:/c:ro" --entrypoint promtool \
+  prom/prometheus:v2.53.0 check config /c/prometheus.yml   # validate prom config
+```
+
+CI: `.github/workflows/ci.yml` runs exactly those two validations — run them locally before pushing.
+
+## Layout & conventions
+
+- `prometheus/prometheus.yml` — standalone scrape config: reaches services on the **host** via `host.docker.internal` (works on Linux only because of the `extra_hosts: host-gateway` mapping in the compose file — don't remove it). The meta repo's dev stack has its *own* prometheus config (`../devstack/prometheus.dev.yml`) using compose service names; changes to scrape targets usually belong in **both**.
+- `grafana/provisioning/` — datasource + dashboard providers, mounted read-only. Dashboards go in `grafana/provisioning/dashboards/` as JSON next to `dashboards.yml` (none exist yet — backlog).
+- Scrape endpoints by convention: Java exposes `/actuator/prometheus` (Micrometer), Node exposes `/metrics` (prom-client). New services follow one of those two shapes.
+- Pin image versions (currently prometheus v2.53.0, grafana 11.1.0); no `:latest`.
+
+## Git workflow
+
+`master` is protected — feature branch (`feat/…`) → push → PR via `gh`. Definition of done: both CI validations pass locally.
