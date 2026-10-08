@@ -2,7 +2,9 @@
 
 Metrics and logs for the Currículum Interactivo project, kept as two deliberately separate pipelines.
 
-Part of the [cv-project](../README.md) multi-repo. Pipeline: Jenkins or GitHub Actions.
+Part of the [cv-project](../README.md) multi-repo. Pipeline: GitHub Actions (`.github/workflows/ci.yml` validates the compose file and the Prometheus config).
+
+**This metrics stack is local-only by design** (decided at T-052, 2026-10-07): it runs in the dev stack, and nothing scrapes the deployed services. The edge returns 403 for `/metrics`.
 
 ## Metrics
 
@@ -17,4 +19,4 @@ docker compose up -d
 
 ## Logs
 
-See [docs/logging.md](docs/logging.md) — structured JSON logs go to MongoDB Atlas or CloudWatch Logs, not to this Prometheus/Grafana stack.
+See [docs/logging.md](docs/logging.md). In production, the domain service's and the BFF's container output goes to CloudWatch Logs (T-054), not to this Prometheus/Grafana stack.
